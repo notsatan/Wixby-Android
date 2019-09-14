@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkBlue"
+    android:orientation="vertical"
+    tools:context=".RegistrationActivity01">
+
+    <ImageView
+        android:id="@+id/activity01_title"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/illustration" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/buttonHorizontalMargin"
+        android:layout_marginRight="@dimen/buttonHorizontalMargin"
+        android:layout_marginBottom="@dimen/buttonBottomMargin"
+        android:elevation="40dp">
+
+        <Button
+            android:id="@+id/activity01_resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/button_style_pink"
+            android:drawableStart="@drawable/icon_reset"
+            android:drawablePadding="@dimen/drawablePadding"
+            android:text="Reset"
+            android:textColor="@color/whiteSmoke" />
+
+        <Button
+            android:id="@+id/activity01_nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/button_style_dashed"
+            android:drawableEnd="@drawable/icon_next"
+            android:drawablePadding="@dimen/drawablePadding"
+            android:text="Next"
+            android:textColor="@color/whiteSmoke" />
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/activity01_importedCard"
+        layout="@layout/card_view_main"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/activity01_title"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/cardHorizontalMargins"
+        android:layout_marginTop="@dimen/cardVerticalTopMargin"
+        android:layout_marginRight="@dimen/cardHorizontalMargins"
+        android:layout_marginBottom="@dimen/cardVerticalBottomMargin" />
+
+</RelativeLayout>

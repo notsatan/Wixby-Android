@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardBackgroundColor="@color/whiteSmoke"
+    app:cardCornerRadius="25dp"
+    app:cardElevation="30dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity01_internalMargin"
+                android:layout_weight="1"
+                android:textColorHint="@color/darkBlue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/activity01_firstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/text_edit_style"
+                    android:drawableStart="@drawable/person_icon"
+                    android:drawablePadding="@dimen/drawablePadding"
+                    android:hint="First Name"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/activity01_textSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity01_internalMargin"
+                android:layout_weight="1"
+                android:textColorHint="@color/darkBlue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/activity01_lastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/text_edit_style"
+                    android:drawableStart="@drawable/person_icon"
+                    android:drawablePadding="@dimen/drawablePadding"
+                    android:hint="Last Name"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/activity01_textSize" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity01_internalMargin"
+            android:textColorHint="@color/darkBlue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/activity01_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_edit_style"
+                android:drawableStart="@drawable/location_icon"
+                android:drawablePadding="@dimen/drawablePadding"
+                android:hint="Place"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/activity01_textSize" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity01_internalMargin"
+            android:textColorHint="@color/darkBlue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/activity01_calendarInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_edit_style"
+                android:drawableStart="@drawable/calendar_icon"
+                android:drawablePadding="@dimen/drawablePadding"
+                android:focusable="false"
+                android:hint="Date Of Birth"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/activity01_textSize" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity01_internalMargin"
+            android:textColorHint="@color/darkBlue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_edit_style"
+                android:drawableStart="@drawable/icon_people"
+                android:drawablePadding="@dimen/drawablePadding"
+                android:enabled="false"
+                android:hint="Select A Gender"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/activity01_textSize" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <RadioGroup
+            android:id="@+id/activity01_radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text="Male"
+                android:textColor="@color/darkBlue"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text="Female"
+                android:textColor="@color/darkBlue"
+                android:textSize="12sp" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
