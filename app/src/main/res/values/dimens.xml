@@ -2,7 +2,7 @@
 <resources>
     <dimen name="cardVerticalBottomMargin">125dp</dimen>
     <dimen name="cardHorizontalMargins">35dp</dimen>
-    <dimen name="cardVerticalTopMargin">70dp</dimen>
+    <dimen name="cardVerticalTopMargin">60dp</dimen>
     <dimen name="drawablePadding">13dp</dimen>
     <dimen name="activity01_internalMargin">5dp</dimen>
 
