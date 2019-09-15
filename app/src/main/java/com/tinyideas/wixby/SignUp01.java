@@ -10,22 +10,28 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Objects;
 
-public class RegistrationActivity01 extends AppCompatActivity {
+public class SignUp01 extends AppCompatActivity {
 
-    private TextInputEditText firstName;
-    private TextInputEditText lastName;
-    private TextInputEditText place;
-    private TextInputEditText dateOfBirth;
+    private TextInputEditText firstNameField;
+    private TextInputEditText lastNameField;
+    private TextInputEditText passwordField;
+    private TextInputEditText dateOfBirthField;
 
     /**
      * The point of entry for the program. Will be used to inflate the layout and assign attributes
@@ -37,26 +43,48 @@ public class RegistrationActivity01 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.registration_activty_01);
+        setContentView(R.layout.activity_main);
+
+        // Making the status bar of the application completely transparent
+        Window window = getWindow();
+        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         // Fetching components from the main screen and initialing the global variables from here.
-        firstName = findViewById(R.id.activity01_firstName);
-        lastName = findViewById(R.id.activity01_lastName);
-        place = findViewById(R.id.activity01_location);
-        dateOfBirth = findViewById(R.id.activity01_calendarInput);
+        firstNameField = findViewById(R.id.activity01_firstName);
+        lastNameField = findViewById(R.id.activity01_lastName);
+        passwordField = findViewById(R.id.activity01_location);
+        dateOfBirthField = findViewById(R.id.activity01_calendarInput);
 
-        Button resetButton = findViewById(R.id.activity01_resetButton);
         final RadioGroup radioGroup = findViewById(R.id.activity01_radioGroup);
 
-        // Attaching a click-event listener to `dateOfBirth` text field. Once the user clicks this
+        Button resetButton = findViewById(R.id.activity01_resetButton);
+        Button nextButton = findViewById(R.id.activity01_nextButton);
+
+        // Setting the display password button to actually display the password when clicked on by the user
+        ImageView showPassword = findViewById(R.id.activity01_showPassword);
+        showPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (passwordField.getTransformationMethod() == PasswordTransformationMethod.getInstance()) {
+                    // If the password filed is hidden, displaying the password as normal text.
+                    passwordField.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    passwordField.setSelection(passwordField.length());
+                } else {
+                    // If the password was already displayed as text, hiding it.
+                    passwordField.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    passwordField.setSelection(passwordField.length());
+                }
+            }
+        });
+
+        // Attaching a click-event listener to `dateOfBirthField` text field. Once the user clicks this
         // field, will display the calendar as a popup to the user.
-        dateOfBirth.setOnClickListener(new View.OnClickListener() {
+        dateOfBirthField.setOnClickListener(new View.OnClickListener() {
             /**
-             * This method will be called when the user clicks in the widget. However, this method won't
-             * be executed if the user changed their focus with the click. That is, if the user was focused
-             * on some other widget and then clicked on this widget, this method won't be executed, instead
-             * of this method `onFocusChange()` will be executed. This method will be executed when the user
-             * has focus inside the widget and then taps inside the same widget again.
+             * This method will be called when the user clicks in the widget. This listener will be
+             * used to open the popup that will display the calendar to the user that will allow them
+             * to select their date of birth.
              *
              * @param view The view that the user tapped upon. In this case, it'll be this text edit widget.
              */
@@ -64,7 +92,7 @@ public class RegistrationActivity01 extends AppCompatActivity {
             public void onClick(View view) {
                 // Creating an object of the class that will display the popup and handle all the tasks
                 // related to the popup
-                final CustomDialog customDialog = new CustomDialog(RegistrationActivity01.this);
+                final CustomDialog customDialog = new CustomDialog(SignUp01.this);
                 customDialog.show();
 
                 // Setting a dismiss listener to the dialog.
@@ -82,11 +110,57 @@ public class RegistrationActivity01 extends AppCompatActivity {
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                firstName.setText("");
-                lastName.setText("");
-                place.setText("");
-                dateOfBirth.setText("");
+                firstNameField.setText("");
+                lastNameField.setText("");
+                passwordField.setText("");
+                dateOfBirthField.setText("");
                 radioGroup.clearCheck();
+            }
+        });
+
+        // Attaching a click event listener to the next button. Will need to check if the user has
+        // entered the required data when this button is pressed.
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Creating a set of strings that will be used to place extracted data into.
+                String firstName;
+                String lastName;
+                String password;
+                String dateOfBirth;
+
+                // Getting data from the selected fields.
+                try {
+                    firstName = firstNameField.getText().toString().trim();
+                    lastName = lastNameField.getText().toString().trim();
+                    password = passwordField.getText().toString().trim();
+                    dateOfBirth = dateOfBirthField.getText().toString().trim();
+                } catch (NullPointerException e) {
+                    Snackbar.make(findViewById(R.id.activity_main_layout), "Something went wrong please try again.", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Getting the gender selected from the radio buttons. Checking if each of the radio
+                // buttons is selected or not. If neither is selected a snack bar will be displayed.
+                String genderSelected = "";
+                if (((RadioButton) findViewById(R.id.activity01_radioMale)).isChecked()) {
+                    genderSelected = "Male";
+                } else if (((RadioButton) findViewById(R.id.activity01_radioFemale)).isChecked()) {
+                    genderSelected = "Female";
+                } else {
+                    Snackbar.make(findViewById(R.id.activity_main_layout), "Please select a gender", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                // If any of these field is empty, then displaying a SnackBar asking the user to fill
+                // the remaining data.
+                if (firstName.length() == 0 || lastName.length() == 0 || password.length() == 0 ||
+                        dateOfBirth.length() == 0) {
+                    Snackbar.make(findViewById(R.id.activity_main_layout), "Please fill all the details", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+
             }
         });
     }
@@ -165,7 +239,7 @@ public class RegistrationActivity01 extends AppCompatActivity {
         date += selectedDate.getYear();
 
         // Now, using this finalized date string setting it as the main text of the edit text box.
-        dateOfBirth.setText(date);
+        dateOfBirthField.setText(date);
     }
 }
 
