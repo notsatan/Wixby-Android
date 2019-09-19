@@ -41,6 +41,14 @@ public class SignUp02 extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 15;
     private ImageView gpsIcon;
 
+    // Creating these strings here as they are to be accessed from inner classes for reading and writing.
+    // Thus, they either need to be global or final :(
+    private static String firstName = "";
+    private static String lastName = "";
+    private static String password = "";
+    private static String dateOfBirth = "";
+    private static String gender = "";
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +58,6 @@ public class SignUp02 extends AppCompatActivity {
         // Setting a return result for the activity by default. Thus, if the user presses the back button
         // they will go back to the previous activity and not directly thrown out of the app.
         setResult(Activity.RESULT_OK);
-
-        String firstName;
-        String lastName;
-        String password;
-        String dateOfBirth;
-        String gender;
 
         // Getting the view stub and inflating it with the required layout.
         ViewStub viewStub = findViewById(R.id.mainViewStub);
@@ -77,9 +79,6 @@ public class SignUp02 extends AppCompatActivity {
             password = resultArray.get(2);
             dateOfBirth = resultArray.get(3);
             gender = resultArray.get(4);
-
-            String text = String.format("FirstName:\t%s\nLastName:\t%s\nPassword:\t%s\nDateOfBirth:\t%s\nGender:\t%s", firstName, lastName, password, dateOfBirth, gender);
-            Log.d("DEBUG", text);
         } catch (Exception e) {
             viewStub.setClickable(false);
 
@@ -120,9 +119,10 @@ public class SignUp02 extends AppCompatActivity {
         final TextInputEditText locationField = findViewById(R.id.locationTextView);
         final TextInputEditText pinCode = findViewById(R.id.pinTextView);
 
+        final CheckBox submitCheckBox = findViewById(R.id.conditionsCheckbox);
+
         final Button resetButton = findViewById(R.id.main_resetButton);
         final Button submitButton = findViewById(R.id.main_submitButton);
-        final CheckBox submitCheckBox = findViewById(R.id.conditionsCheckbox);
 
         // Changing the text of the submit button.
         submitButton.setText("Submit");
@@ -134,13 +134,12 @@ public class SignUp02 extends AppCompatActivity {
         // Getting a list of all the country names and storing them in an ArrayList, this list will
         // then be used to populate the country spinner.
         String[] isoCountryCodes = Locale.getISOCountries();
-        ArrayList<String> countries = new ArrayList<>();
+        final ArrayList<String> countries = new ArrayList<>();
 
         for (String countryCode : isoCountryCodes) {
             Locale locale = new Locale("", countryCode);
             String countryName = locale.getDisplayName().trim();
             countries.add(countryName);
-            Log.d("DEBUG", countryName);
         }
 
         // In order to sort the entries of the ArrayList in alphabetical order, using a custom
@@ -255,6 +254,93 @@ public class SignUp02 extends AppCompatActivity {
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // When the user presses the reset button, simply removing the text from the text edits
+                // un-selecting the checkbox, and selecting the first item in both the spinners.
+                locationField.setText("");
+                pinCode.setText("");
+                countrySpinner.setSelection(0);
+                stateSpinner.setSelection(0);
+                stateTextView.setText("");
+                submitCheckBox.setChecked(false);
+            }
+        });
+
+        // Attaching a click event listener to the submit button
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Inside here, checking if the user has filled all the fields that are required, if
+                // not, then displaying an error message to the user.
+                String location = Objects.requireNonNull(locationField.getText()).toString().trim();
+                String pin = Objects.requireNonNull(pinCode.getText()).toString().trim();
+                String country = countrySpinner.getSelectedItem().toString().trim();
+
+                // Creating a blank string for the state now. Will populate it later.
+                String state = "";
+
+                // Checking if any of these values are null. Not checking for `country` as one item
+                // from the spinner will always be selected.
+                if (location.length() == 0 || pin.length() == 0) {
+                    Snackbar.make(findViewById(R.id.activity_main_layout),
+                            "Please fill all the required details.", Snackbar.LENGTH_LONG).show();
+
+                    // Returning the flow of control from here.
+                    return;
+                }
+
+                // Just like how an element of the country spinner is always selected, similarly an
+                // element from the state spinner will always be selected. Thus, instead of directly
+                // taking its value as the result, first checking if the country selected is India.
+                if (country.equalsIgnoreCase("India")) {
+                    // If the country is India, then the user will chose their state from the state
+                    // spinner. Thus, getting the value from spinner.
+                    state = stateSpinner.getSelectedItem().toString().trim();
+                } else {
+                    // If the country selected by the user is not India, then they will have to enter
+                    // their state manually. Thus, taking data from the text edit and checking if this
+                    // is valid data or not.
+                    state = Objects.requireNonNull(stateTextView.getText()).toString().trim();
+
+                    // Creating a temporary variable just for fun :p
+                    String tempState = state.toLowerCase();
+
+                    // Checking if the user entered some data or not
+                    if (state.length() == 0) {
+                        Snackbar.make(findViewById(R.id.activity_main_layout),
+                                "Please enter the state where you reside", Snackbar.LENGTH_LONG).show();
+
+                        // Returning the flow of control
+                        return;
+                    } else if (tempState.equals("solid") || tempState.equals("liquid") || tempState.equals("gas")) {
+                        Snackbar.make(findViewById(R.id.activity_main_layout),
+                                "Are you that eager to die\t\t-___-", Snackbar.LENGTH_LONG).show();
+
+                        // Returning the flow of control.
+                        return;
+                    } else if (tempState.equals("plasma") || tempState.equals("bec")) {
+                        Snackbar.make(findViewById(R.id.activity_main_layout),
+                                "You sir, earn a pass for being literate ;)", Snackbar.LENGTH_LONG).show();
+
+                        // Not returning the flow of control ;)
+                    }
+                }
+
+                // Checking if the checkbox is clicked or not.
+                if (!submitCheckBox.isChecked()) {
+                    // If the checkbox is not checked (oh the irony), then displaying an error message to the user
+                    Snackbar.make(findViewById(R.id.activity_main_layout),
+                            "Please agree to the Terms And Conditions to proceed", Snackbar.LENGTH_LONG).show();
+
+                    // Returning the flow of control back.
+                    return;
+                }
+
+                // If the flow-of-control reaches this point, then the user has entered all the data
+                // in the required format. So, creating an instance of the database helper class to
+                // insert data into the database.
+                DatabaseHelper databaseHelper = new DatabaseHelper(SignUp02.this);
+                databaseHelper.registerUser(firstName, lastName, password, location, state,
+                        country, pin, dateOfBirth, gender);
             }
         });
     }
@@ -353,8 +439,6 @@ class CustomLocationListener implements LocationListener {
      */
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("Debug", String.format("Location Updated [%f, %f];",
-                location.getLatitude(), location.getLongitude()));
         locationUpdateFeed.setText(String.format("(%f, %f)", location.getLatitude(), location.getLongitude()));
     }
 
