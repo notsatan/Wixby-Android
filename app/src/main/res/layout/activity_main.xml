@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main_layout"
-    android:paddingTop="20dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wallpaper02"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="20dp"
+    tools:ignore="HardcodedText">
 
     <ImageView
         android:id="@+id/activity01_title"
@@ -13,6 +15,7 @@
         android:layout_height="125dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
+        android:contentDescription="Display Image"
         android:src="@drawable/illustration" />
 
     <RelativeLayout
@@ -48,9 +51,8 @@
 
     </RelativeLayout>
 
-    <include
-        android:id="@+id/activity01_importedCard"
-        layout="@layout/card_view_main"
+    <ViewStub
+        android:id="@+id/mainViewStub"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/activity01_title"
