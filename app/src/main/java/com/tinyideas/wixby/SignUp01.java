@@ -15,17 +15,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -54,11 +51,6 @@ public class SignUp01 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Making the status bar of the application completely transparent
-        Window window = getWindow();
-        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
         /*
          * By itself, an empty window will be displayed in this section. In order to display the main
          * screen to the user, the ViewStub placed in the XML layout file should be inflated with the
@@ -79,15 +71,14 @@ public class SignUp01 extends AppCompatActivity {
 
         final RadioGroup radioGroup = findViewById(R.id.activity01_radioGroup);
 
-        Button resetButton = findViewById(R.id.activity01_resetButton);
-        Button nextButton = findViewById(R.id.activity01_nextButton);
+        Button resetButton = findViewById(R.id.main_resetButton);
+        Button nextButton = findViewById(R.id.main_submitButton);
 
         // Setting the display password button to actually display the password when clicked on by the user
         ImageView showPassword = findViewById(R.id.activity01_showPassword);
         showPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(SignUp01.this, "Click", Toast.LENGTH_SHORT).show();
                 if (passwordField.getTransformationMethod() == PasswordTransformationMethod.getInstance()) {
                     // If the password filed is hidden, displaying the password as normal text.
                     passwordField.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
