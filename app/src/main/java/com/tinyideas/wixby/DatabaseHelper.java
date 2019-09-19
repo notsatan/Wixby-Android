@@ -2,9 +2,10 @@ package com.tinyideas.wixby;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+
 
 import androidx.annotation.Nullable;
 
@@ -12,6 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "Users.db";
     public static final String TABLE_NAME = "IndexTable";
+
     public static final String COLUMN_INDEX = "AutoIndex";
     public static final String COLUMN_FIRST_NAME = "FirstName";
     public static final String COLUMN_LAST_NAME = "LastName";
@@ -59,10 +61,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "CREATE TABLE %s (%s integer PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, " +
                         "%s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT);",
                 TABLE_NAME, COLUMN_INDEX, COLUMN_FIRST_NAME, COLUMN_LAST_NAME, COLUMN_PASSWORD,
-                COLUMN_PLACE, COLUMN_STATE, COLUMN_COUNTRY, COLUMN_PIN, COLUMN_DOB, COLUMN_GENDER
+                COLUMN_DOB, COLUMN_GENDER, COLUMN_PLACE, COLUMN_PIN, COLUMN_STATE, COLUMN_COUNTRY
         );
-
-        Log.d("DEBUG", sqlQuery);
 
         // Running the SQL Query created above.
         sqLiteDatabase.execSQL(sqlQuery);
@@ -110,7 +110,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param pin       A string containing the PIN Code entered.
      * @param dob       A string containing the date of birth.
      * @param gender    A string containing the gender.
-     *
      * @return If the insertion is successful, the row ID of the newly inserted row will be returned
      * and -1 will be returned in case of error.
      */
@@ -129,12 +128,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_FIRST_NAME, firstName);
         contentValues.put(COLUMN_LAST_NAME, lastName);
         contentValues.put(COLUMN_PASSWORD, password);
-        contentValues.put(COLUMN_PLACE, place);
-        contentValues.put(COLUMN_STATE, state);
-        contentValues.put(COLUMN_COUNTRY, country);
-        contentValues.put(COLUMN_PIN, pin);
         contentValues.put(COLUMN_DOB, dob);
         contentValues.put(COLUMN_GENDER, gender);
+        contentValues.put(COLUMN_PLACE, place);
+        contentValues.put(COLUMN_PIN, pin);
+        contentValues.put(COLUMN_STATE, state);
+        contentValues.put(COLUMN_COUNTRY, country);
 
         // Once all the values that are to be added to a row of the table have been placed inside this
         // object, adding this object to the table. If the insertion is successful, `result` will be
@@ -152,10 +151,129 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          * then a completely empty row can't be added to the database and `result` will be -1.
          */
 
-        Log.d("DEBUG", "Data saved successfully: " + contentValues.toString());
-
         // Once the row is added to the database, closing the database and returning result.
         database.close();
         return result;
+    }
+
+
+    /**
+     * This method will be used to get the last row form the database. Will return the data as an object
+     * of `Data` that will contain the details about the user who registered.
+     *
+     * @return An object containing the data of the user who last registered in the database.
+     */
+    public Data getLastRegisteredUser() {
+        // Getting a readable instance of the database.
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+
+        // Writing the SQL Query that will be used to get the last row from the database.
+        String query = String.format("SELECT * FROM %s WHERE %s = (SELECT MAX(%s) FROM %s)",
+                TABLE_NAME, COLUMN_INDEX, COLUMN_INDEX, TABLE_NAME);
+
+        // Creating a new cursor. This cursor will get location of the row when the following SQL
+        // query is executed.
+        Cursor cursor = sqLiteDatabase.rawQuery(query, null);
+
+        // If the database had no such data, then the cursor will be null. If the cursor isn't null,
+        // then moving the cursor to the row where we found the required data.
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        // Using the cursor to create a `Data` object by reading values from each column one by one.
+        Data data = new Data(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
+                cursor.getString(2), cursor.getString(3), cursor.getString(6),
+                cursor.getString(8), cursor.getString(9), cursor.getString(7),
+                cursor.getString(4), cursor.getString(5));
+
+        // Once the work with the cursor is done, closing it.
+        cursor.close();
+        return data;
+    }
+}
+
+/**
+ * This will be a simple POJO class. Will be used to store and transfer the data regarding a user
+ * from one section of the application to another. Will consist of a constructor that will be used
+ * as the setter and will have individual getters for all the variables.
+ */
+class Data {
+    private int userIndex;
+    private String firstName;
+    private String lastName;
+    private String password;
+    private String dateOfBirth;
+    private String gender;
+    private String location;
+    private String pin;
+    private String state;
+    private String country;
+
+    /**
+     * The class constructor. Will be used as the only setter in the entire class.
+     *
+     * @param userIndex   An integer containing the index position for the row in which the user is present
+     * @param firstName   The first name of the user.
+     * @param lastName    The last name of the user.
+     * @param password    The password that the user selects.
+     * @param dateOfBirth The date of birth for the user.
+     * @param gender      The gender of the user.
+     * @param location    The location for the user.
+     * @param pin         The PIN code that the user entered.
+     * @param state       The state in which the user resides.
+     * @param country     The country of residence for the user.
+     */
+    public Data(int userIndex, String firstName, String lastName, String password, String dateOfBirth,
+                String gender, String location, String pin, String state, String country) {
+        this.userIndex = userIndex;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.location = location;
+        this.pin = pin;
+        this.state = state;
+        this.country = country;
+    }
+
+    public int getUserIndex() {
+        return userIndex;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getState() {
+        return state;
     }
 }

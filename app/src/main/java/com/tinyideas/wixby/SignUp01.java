@@ -66,7 +66,7 @@ public class SignUp01 extends AppCompatActivity {
         // Fetching components from the main screen and initialing the global variables from here.
         firstNameField = findViewById(R.id.activity01_firstName);
         lastNameField = findViewById(R.id.activity01_lastName);
-        passwordField = findViewById(R.id.activity01_location);
+        passwordField = findViewById(R.id.activity01_password);
         dateOfBirthField = findViewById(R.id.activity01_calendarInput);
 
         final RadioGroup radioGroup = findViewById(R.id.activity01_radioGroup);

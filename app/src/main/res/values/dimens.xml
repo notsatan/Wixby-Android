@@ -12,5 +12,6 @@
     <dimen name="buttonHorizontalMargin">50dp</dimen>
     <dimen name="normal_text_size">13sp</dimen>
     <dimen name="drawableSize">22dp</dimen>
+    <dimen name="displayInnerMargin">8dp</dimen>
 
 </resources>

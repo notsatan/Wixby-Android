@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@android:color/darker_gray"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        tools:context=".DisplayData">
+
+        <TextView
+            android:id="@+id/displayUserCounter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="19sp"
+            android:textColor="@color/darkBlue"
+            android:layout_margin="16dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:id="@+id/displayName"
+            android:textColor="@color/darkBlue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/displayInnerMargin"
+            android:background="@drawable/text_edit_style"
+            android:drawableStart="@drawable/person_icon"
+            android:drawablePadding="@dimen/drawablePadding" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/displayInnerMargin"
+            android:background="@drawable/text_edit_style">
+
+            <ImageView
+                android:id="@+id/displayShowPassword"
+                android:layout_width="@dimen/drawableSize"
+                android:layout_height="@dimen/drawableSize"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:textColor="@color/darkBlue"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="Show Password Icon"
+                android:src="@drawable/icon_show_password"
+                android:translationZ="30dp" />
+
+
+            <TextView
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:id="@+id/displayPassordField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:textColor="@color/darkBlue"
+                android:drawableStart="@drawable/icon_key"
+                android:drawablePadding="@dimen/drawablePadding"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:id="@+id/displayDob"
+            android:layout_width="match_parent"
+            android:textColor="@color/darkBlue"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/displayInnerMargin"
+            android:background="@drawable/text_edit_style"
+            android:drawableStart="@drawable/calendar_icon"
+            android:drawablePadding="@dimen/drawablePadding" />
+
+        <TextView
+            android:id="@+id/displayGender"
+            android:layout_width="match_parent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/displayInnerMargin"
+            android:background="@drawable/text_edit_style"
+            android:textColor="@color/darkBlue"
+            android:drawableStart="@drawable/icon_people"
+            android:drawablePadding="@dimen/drawablePadding" />
+
+        <TextView
+            android:id="@+id/displayLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/displayInnerMargin"
+            android:textColor="@color/darkBlue"
+            android:background="@drawable/text_edit_style"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:drawableStart="@drawable/icon_location"
+            android:drawablePadding="@dimen/drawablePadding" />
+
+        <TextView
+            android:id="@+id/displayPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/displayInnerMargin"
+            android:background="@drawable/text_edit_style"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/darkBlue"
+            android:drawableStart="@drawable/icon_pin"
+            android:drawablePadding="@dimen/drawablePadding" />
+
+        <TextView
+            android:id="@+id/displayCountry"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/displayInnerMargin"
+            android:background="@drawable/text_edit_style"
+            android:drawableStart="@drawable/icon_city"
+            android:textColor="@color/darkBlue"
+            android:drawablePadding="@dimen/drawablePadding" />
+
+    </LinearLayout>
+
+</ScrollView>
