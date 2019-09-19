@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -119,6 +122,8 @@ public class SignUp02 extends AppCompatActivity {
         final TextInputLayout stateParentView = findViewById(R.id.stateParentLayout);
         final RelativeLayout stateSpinnerLayout = findViewById(R.id.stateSpinnerLayout);
 
+        final TextInputEditText locationField = findViewById(R.id.locationTextView);
+
         // Getting the GPS icon, when the user clicks this icon, the position of the device will be
         // taken using GPS and will be filled into the location text field.
         gpsIcon = findViewById(R.id.gpsIcon);
@@ -202,6 +207,13 @@ public class SignUp02 extends AppCompatActivity {
         // Attaching a click listener to the GPS Icon ImageView. When the user clicks this icon, their
         // position is to be taken using the GPS and filled in the location text box.
         gpsIcon.setOnClickListener(new View.OnClickListener() {
+            // Creating a location manager. In case the user wants to display their location using the GPS,
+            // this manager will be used to do the same.
+            private LocationManager locationManager;
+            private boolean isReceivingUpdates = false;
+            private CustomLocationListener customLocationListener;
+
+            @SuppressLint("MissingPermission")
             @Override
             public void onClick(View view) {
                 // When the user clicks on the auto-locate button, the app will fetch the location of
@@ -209,13 +221,32 @@ public class SignUp02 extends AppCompatActivity {
                 // to have the GPS permission granted. If the app tries to use this service without \
                 // the permission, it could lead to a crash. Thus, beginning with checking if the
                 // permissions are granted or not.
-                if (!checkForPermissions()) {
-                    // If the permissions have not been granted, requesting the permissions at runtime.
-                    requestPermissions();
-                } else {
+                if (checkForPermissions()) {
                     // If the app already has the required permissions, then directly trying to get
                     // the users location using the LocationManager.
-                    Toast.makeText(SignUp02.this, "Yipeeeeee", Toast.LENGTH_SHORT).show();
+                    if (locationManager == null || !isReceivingUpdates) {
+                        // Creating an instance of the location manager service and setting it up to listen
+                        // for updates in the location of the device after a fixed time or distance interval.
+                        customLocationListener = new CustomLocationListener(locationField);
+                        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                                2_000, 2, customLocationListener);
+
+                        // Now that the location manager is receiving updates, changing the image for the
+                        // GPS icon and updating the boolean too.
+                        gpsIcon.setImageDrawable(getDrawable(R.drawable.icon_gps_active));
+                        isReceivingUpdates = true;
+                    } else {
+                        // If the app was already listening for updates, then in here, disabling the
+                        // updates. And resetting the boolean and changing the image for the GPS icon.
+                        locationManager.removeUpdates(customLocationListener);
+
+                        isReceivingUpdates = false;
+                        gpsIcon.setImageDrawable(getDrawable(R.drawable.icon_gps));
+                    }
+                } else {
+                    // If the permissions have not been granted, requesting the permissions at runtime.
+                    requestPermissions();
                 }
             }
         });
@@ -293,5 +324,65 @@ public class SignUp02 extends AppCompatActivity {
 
                 break;
         }
+    }
+}
+
+class CustomLocationListener implements LocationListener {
+
+    private TextInputEditText locationUpdateFeed;
+
+    /**
+     * The class constructor.
+     *
+     * @param locationUpdateFeed The text field in which the location needs to be written.
+     */
+    public CustomLocationListener(TextInputEditText locationUpdateFeed) {
+        this.locationUpdateFeed = locationUpdateFeed;
+    }
+
+    /**
+     * This method will be automatically executed whenever the location of the device changes. The
+     * location object received will contain the coordinates for the new location of the device.
+     *
+     * @param location A location object. Among other details, will also contain the latitude and
+     *                 longitude for the new location of the device.
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("Debug", String.format("Location Updated [%f, %f];",
+                location.getLatitude(), location.getLongitude()));
+        locationUpdateFeed.setText(String.format("(%f, %f)", location.getLatitude(), location.getLongitude()));
+    }
+
+    /**
+     * Deprecated in API 29. Should not be used. Never invoked since API 29 onwards.
+     *
+     * @param provider
+     * @param status
+     * @param extras
+     */
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        /* Deprecated method. Should not be used */
+    }
+
+    /**
+     * Default method, executed when the provider is enabled by the user.
+     *
+     * @param provider A string containing the name of the provider that is enabled.
+     */
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    /**
+     * Default method, called when the user disables the provider.
+     *
+     * @param provider A string containing the name of the provider that was disabled by the user.
+     */
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
