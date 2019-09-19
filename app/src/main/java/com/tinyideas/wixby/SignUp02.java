@@ -8,16 +8,15 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewStub;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -139,7 +138,8 @@ public class SignUp02 extends AppCompatActivity {
         for (String countryCode : isoCountryCodes) {
             Locale locale = new Locale("", countryCode);
             String countryName = locale.getDisplayName().trim();
-            countries.add(countryName);
+            if (!countries.contains(countryName))
+                countries.add(countryName);
         }
 
         // In order to sort the entries of the ArrayList in alphabetical order, using a custom
@@ -172,7 +172,6 @@ public class SignUp02 extends AppCompatActivity {
         countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("DEBUG", countrySpinner.getSelectedItem().toString());
                 String selection = countrySpinner.getSelectedItem().toString();
 
                 // If `selection` is 'India', will display the state spinner as it is populated with
@@ -339,8 +338,18 @@ public class SignUp02 extends AppCompatActivity {
                 // in the required format. So, creating an instance of the database helper class to
                 // insert data into the database.
                 DatabaseHelper databaseHelper = new DatabaseHelper(SignUp02.this);
-                databaseHelper.registerUser(firstName, lastName, password, location, state,
-                        country, pin, dateOfBirth, gender);
+                databaseHelper.registerUser(firstName, lastName, password, dateOfBirth, gender, location,
+                        pin, state, country);
+
+                // Once the data has been added, pausing the app for a couple of seconds and then
+                // launching the next activity.
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(SignUp02.this, DisplayData.class));
+                    }
+                }, 1000);
             }
         });
     }
