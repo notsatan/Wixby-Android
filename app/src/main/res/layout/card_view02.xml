@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/whiteSmoke"
+    app:cardCornerRadius="35dp"
+    app:cardElevation="30dp"
+    tools:context=".SignUp02"
+    tools:ignore="HardcodedText">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity01_internalMargin"
+            android:background="@drawable/text_edit_style"
+            android:padding="0dp">
+
+            <ImageView
+                android:id="@+id/gpsIcon"
+                android:layout_width="@dimen/drawableSize"
+                android:layout_height="@dimen/drawableSize"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="15dp"
+                android:contentDescription="GPS Icon"
+                android:src="@drawable/icon_gps"
+                android:translationZ="1dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="9dp"
+                android:layout_marginRight="9dp"
+                android:paddingBottom="5dp"
+                android:layout_marginBottom="@dimen/activity01_internalMargin"
+                android:textColorHint="@color/darkBlue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/locationTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:drawableStart="@drawable/icon_location"
+                    android:drawablePadding="@dimen/drawablePadding"
+                    android:hint="Enter your Location"
+                    android:textSize="@dimen/normal_text_size" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </RelativeLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity01_internalMargin"
+            android:textColorHint="@color/darkBlue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/pinTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/text_edit_style"
+                android:drawableStart="@drawable/icon_pin"
+                android:drawablePadding="@dimen/drawablePadding"
+                android:hint="Enter your Pin Code"
+                android:inputType="number"
+                android:textSize="@dimen/normal_text_size" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/activity01_internalMargin"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_custom_style"
+                android:padding="0dp">
+
+                <ImageView
+                    android:id="@+id/countrySpinnerIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/spinner_right_icon"
+                    android:contentDescription="Dropdown Image" />
+
+                <Spinner
+                    android:id="@+id/countrySpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toStartOf="@id/countrySpinnerIcon"
+                    android:background="@android:color/transparent" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/stateSpinnerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_custom_style"
+                android:padding="0dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/stateSpinnerIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/spinner_right_icon"
+                    android:contentDescription="Dropdown Image" />
+
+                <Spinner
+                    android:id="@+id/stateSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="15dp"
+                    android:layout_toStartOf="@id/stateSpinnerIcon"
+                    android:background="@android:color/transparent" />
+
+            </RelativeLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/stateParentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColorHint="@color/darkBlue"
+                android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/stateTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/text_edit_style"
+                    android:drawableStart="@drawable/icon_city"
+                    android:drawablePadding="@dimen/drawablePadding"
+                    android:gravity="center_vertical"
+                    android:hint="Enter your State"
+                    android:textSize="@dimen/normal_text_size" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/conditionsCheckbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="7dp"
+            android:text="@string/termsAndConditionsText"
+            android:textSize="@dimen/normal_text_size" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

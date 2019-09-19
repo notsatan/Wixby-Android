@@ -1,18 +1,23 @@
 package com.tinyideas.wixby;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -20,10 +25,12 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class SignUp01 extends AppCompatActivity {
@@ -32,6 +39,8 @@ public class SignUp01 extends AppCompatActivity {
     private TextInputEditText lastNameField;
     private TextInputEditText passwordField;
     private TextInputEditText dateOfBirthField;
+
+    private static final int REQUEST_CODE = 15;
 
     /**
      * The point of entry for the program. Will be used to inflate the layout and assign attributes
@@ -50,6 +59,18 @@ public class SignUp01 extends AppCompatActivity {
         window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
+        /*
+         * By itself, an empty window will be displayed in this section. In order to display the main
+         * screen to the user, the ViewStub placed in the XML layout file should be inflated with the
+         * XML layout for the form. This should be done before trying to extract any widgets from the
+         * screen otherwise it'll cause a NullPointerException.
+         */
+
+        // Getting the view stub and inflating it with the required layout.
+        ViewStub viewStub = findViewById(R.id.mainViewStub);
+        viewStub.setLayoutResource(R.layout.card_view01);
+        viewStub.inflate();
+
         // Fetching components from the main screen and initialing the global variables from here.
         firstNameField = findViewById(R.id.activity01_firstName);
         lastNameField = findViewById(R.id.activity01_lastName);
@@ -66,6 +87,7 @@ public class SignUp01 extends AppCompatActivity {
         showPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(SignUp01.this, "Click", Toast.LENGTH_SHORT).show();
                 if (passwordField.getTransformationMethod() == PasswordTransformationMethod.getInstance()) {
                     // If the password filed is hidden, displaying the password as normal text.
                     passwordField.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
@@ -128,21 +150,21 @@ public class SignUp01 extends AppCompatActivity {
                 String lastName;
                 String password;
                 String dateOfBirth;
+                String genderSelected = "";
 
                 // Getting data from the selected fields.
                 try {
-                    firstName = firstNameField.getText().toString().trim();
-                    lastName = lastNameField.getText().toString().trim();
-                    password = passwordField.getText().toString().trim();
-                    dateOfBirth = dateOfBirthField.getText().toString().trim();
+                    firstName = Objects.requireNonNull(firstNameField.getText()).toString().trim();
+                    lastName = Objects.requireNonNull(lastNameField.getText()).toString().trim();
+                    password = Objects.requireNonNull(passwordField.getText()).toString().trim();
+                    dateOfBirth = Objects.requireNonNull(dateOfBirthField.getText()).toString().trim();
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.activity_main_layout), "Something went wrong please try again.", Snackbar.LENGTH_LONG).show();
                     return;
                 }
 
-                // Getting the gender selected from the radio buttons. Checking if each of the radio
-                // buttons is selected or not. If neither is selected a snack bar will be displayed.
-                String genderSelected = "";
+                // Getting the gender selected from the radio buttons. If each of the radio buttons
+                // is selected or not. If neither is selected a snack bar will be displayed.
                 if (((RadioButton) findViewById(R.id.activity01_radioMale)).isChecked()) {
                     genderSelected = "Male";
                 } else if (((RadioButton) findViewById(R.id.activity01_radioFemale)).isChecked()) {
@@ -160,7 +182,21 @@ public class SignUp01 extends AppCompatActivity {
                     return;
                 }
 
+                // If the flow of control reaches this point, then all the required input has been
+                // collected from the user. Thus sending the user to the next activity.
+                Intent intent = new Intent(SignUp01.this, SignUp02.class);
 
+                // Creating an ArrayList that will contain all the data that was selected by the user till now.
+                ArrayList<String> data = new ArrayList<>();
+                data.add(firstName);
+                data.add(lastName);
+                data.add(password);
+                data.add(dateOfBirth);
+                data.add(genderSelected);
+
+                // Adding all the data selected by the user up to this point to this intent.
+                intent.putExtra(getResources().getString(R.string.intentTag), data);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
     }
@@ -240,6 +276,36 @@ public class SignUp01 extends AppCompatActivity {
 
         // Now, using this finalized date string setting it as the main text of the edit text box.
         dateOfBirthField.setText(date);
+    }
+
+    /**
+     * Since the second activity is being started using the `startActivityForResult()` method, once
+     * the activity finishes, the control will be returned to this segment of this activity. In the
+     * subsequent activities, there might be a need to close the entire application. Thus, if the
+     * next activity returns the code as cancelled, simply closing the entire application at once.
+     *
+     * @param requestCode An integer. This will be the code that was used while launching the activity.
+     * @param resultCode  An integer. Will be the code that is returned by the activity once it closes.
+     * @param data        An optional intent. If the activity wants, it can attach data to an intent and that
+     *                    intent will be received as this intent.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Performing a check for which activity has returned what result.
+        switch (requestCode) {
+            case REQUEST_CODE:
+                // If the flow-of-control reaches this part, then it means that the second page has
+                // closed and returned the result to this activity. Next, simply checking as to what
+                // result is returned.
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    // If the result code is cancelled, then it means that the application needs to
+                    // be closed, thus closing this activity too.
+                    finish();
+                }
+                break;
+        }
     }
 }
 
@@ -342,4 +408,6 @@ class CustomDialog extends Dialog {
     public Date getDateSelected() {
         return dateSelected;
     }
+
+
 }
