@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,11 +20,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -33,15 +32,16 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Locale;
+import java.util.Objects;
 
 public class SignUp02 extends AppCompatActivity {
 
     // An integer with a random value. Will be used to request the user for permissions during runtime.
     private static final int PERMISSION_REQUEST_CODE = 15;
-    private static ImageView gpsIcon;
+    private ImageView gpsIcon;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +50,6 @@ public class SignUp02 extends AppCompatActivity {
         // Setting a return result for the activity by default. Thus, if the user presses the back button
         // they will go back to the previous activity and not directly thrown out of the app.
         setResult(Activity.RESULT_OK);
-
-        // Making the status bar of the application completely transparent
-        Window window = getWindow();
-        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         String firstName;
         String lastName;
@@ -72,7 +67,7 @@ public class SignUp02 extends AppCompatActivity {
         // and then the app will be closed.
         try {
             Bundle passedData = getIntent().getExtras();
-            ArrayList<String> resultArray = passedData.getStringArrayList(getResources().getString(R.string.intentTag));
+            ArrayList<String> resultArray = Objects.requireNonNull(passedData).getStringArrayList(getResources().getString(R.string.intentTag));
 
             // Getting the results one by one from the list. They are to be retrieved in the order
             // they were inserted in the list.
@@ -119,10 +114,18 @@ public class SignUp02 extends AppCompatActivity {
 
         // Getting the container layout for the state textView and the state spinner. Instead of hiding
         // the individual, these container layouts will be hidden from the screen as required.
-        final TextInputLayout stateParentView = findViewById(R.id.stateParentLayout);
+        final TextInputLayout stateTextParentView = findViewById(R.id.stateParentLayout);
         final RelativeLayout stateSpinnerLayout = findViewById(R.id.stateSpinnerLayout);
 
         final TextInputEditText locationField = findViewById(R.id.locationTextView);
+        final TextInputEditText pinCode = findViewById(R.id.pinTextView);
+
+        final Button resetButton = findViewById(R.id.main_resetButton);
+        final Button submitButton = findViewById(R.id.main_submitButton);
+        final CheckBox submitCheckBox = findViewById(R.id.conditionsCheckbox);
+
+        // Changing the text of the submit button.
+        submitButton.setText("Submit");
 
         // Getting the GPS icon, when the user clicks this icon, the position of the device will be
         // taken using GPS and will be filled into the location text field.
@@ -132,20 +135,17 @@ public class SignUp02 extends AppCompatActivity {
         // then be used to populate the country spinner.
         String[] isoCountryCodes = Locale.getISOCountries();
         ArrayList<String> countries = new ArrayList<>();
+
         for (String countryCode : isoCountryCodes) {
             Locale locale = new Locale("", countryCode);
-            String countryName = locale.getDisplayName();
+            String countryName = locale.getDisplayName().trim();
             countries.add(countryName);
+            Log.d("DEBUG", countryName);
         }
 
         // In order to sort the entries of the ArrayList in alphabetical order, using a custom
         // comparator to do the same.
-        Collections.sort(countries, new Comparator<String>() {
-            @Override
-            public int compare(String data01, String data02) {
-                return data01.compareTo(data02);
-            }
-        });
+        Collections.sort(countries, String.CASE_INSENSITIVE_ORDER);
 
         // Once the array list containing all countries is prepared, using the same to populate the
         // spinner too. To do so, creating an ArrayAdapter that will populate data from this list and
@@ -180,13 +180,13 @@ public class SignUp02 extends AppCompatActivity {
                 // just Indian states. If `selection` is something else, will display the state text view.
                 if (selection.equalsIgnoreCase("India")) {
                     // Hiding the state text view
-                    stateParentView.setVisibility(View.GONE);
+                    stateTextParentView.setVisibility(View.GONE);
 
                     // Displaying the spinner
                     stateSpinnerLayout.setVisibility(View.VISIBLE);
                 } else {
                     // Displaying the text view
-                    stateParentView.setVisibility(View.VISIBLE);
+                    stateTextParentView.setVisibility(View.VISIBLE);
 
                     // Hiding the spinner.
                     stateSpinnerLayout.setVisibility(View.GONE);
@@ -200,7 +200,7 @@ public class SignUp02 extends AppCompatActivity {
                 // by default. However, in the off-hand chance that this changes in the future Android
                 // versions, simply hiding the state spinner and text view from the display in here.
                 stateSpinnerLayout.setVisibility(View.GONE);
-                stateParentView.setVisibility(View.GONE);
+                stateTextParentView.setVisibility(View.GONE);
             }
         });
 
@@ -248,6 +248,13 @@ public class SignUp02 extends AppCompatActivity {
                     // If the permissions have not been granted, requesting the permissions at runtime.
                     requestPermissions();
                 }
+            }
+        });
+
+        // Attaching a click event listener to the reset button.
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
             }
         });
     }
@@ -303,26 +310,23 @@ public class SignUp02 extends AppCompatActivity {
 
         // Checking to make sure that the permissions being granted are the ones that the app requested
         // for during runtime.
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                // If the flow-of-control reaches this part, it means that the method is returning the
-                // result for the GPS location permission. Checking if the user has granted the
-                // permission or denied it. Since the request was made for two permissions, thus,
-                // `grantResults` will have two entries, each indicating whether the corresponding
-                // permission was granted by the user or not.
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    // Permissions granted. The user was asked for the permissions when they clicked 
-                    // on the GPS icon. Thus, now that the permission has been granted, implicitly
-                    // performing a click on the same icon.
-                    gpsIcon.performClick();
-                } else {
-                    // Permissions denied.
-                    Snackbar.make(findViewById(R.id.activity_main_layout),
-                            "Y u do this to me?\n\t\t\t\tI cri\t\t ಥ_ಥ", Snackbar.LENGTH_LONG).show();
-                }
-
-                break;
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            // If the flow-of-control reaches this part, it means that the method is returning the
+            // result for the GPS location permission. Checking if the user has granted the
+            // permission or denied it. Since the request was made for two permissions, thus,
+            // `grantResults` will have two entries, each indicating whether the corresponding
+            // permission was granted by the user or not.
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                // Permissions granted. The user was asked for the permissions when they clicked
+                // on the GPS icon. Thus, now that the permission has been granted, implicitly
+                // performing a click on the same icon.
+                gpsIcon.performClick();
+            } else {
+                // Permissions denied.
+                Snackbar.make(findViewById(R.id.activity_main_layout),
+                        "Y u do this to me?\n\t\t\t\tI cri\t\t ಥ_ಥ", Snackbar.LENGTH_LONG).show();
+            }
         }
     }
 }
@@ -357,9 +361,9 @@ class CustomLocationListener implements LocationListener {
     /**
      * Deprecated in API 29. Should not be used. Never invoked since API 29 onwards.
      *
-     * @param provider
-     * @param status
-     * @param extras
+     * @param provider String containing the name of the provider.
+     * @param status   An integer containing the status code.
+     * @param extras   A bundle.
      */
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {

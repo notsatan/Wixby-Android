@@ -4,7 +4,8 @@
     <string name="intentTag">IntentData</string>
     <string name="termsAndConditionsText">Agree to <i><b>Terms And Conditions</b></i></string>
 
-    <string-array name="statesList"><item>Andaman and Nicobar Islands</item>
+    <string-array name="statesList">
+        <item>Andaman and Nicobar Islands</item>
         <item>Andhra Pradesh</item>
         <item>Arunachal Pradesh</item>
         <item>Assam</item>
