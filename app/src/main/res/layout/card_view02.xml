@@ -42,8 +42,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="9dp"
                 android:layout_marginRight="9dp"
-                android:paddingBottom="5dp"
                 android:layout_marginBottom="@dimen/activity01_internalMargin"
+                android:paddingBottom="5dp"
                 android:textColorHint="@color/darkBlue">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -101,6 +101,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginBottom="3dp"
+                    android:onClick="countryImageButtonClicked"
                     android:background="@drawable/spinner_right_icon"
                     android:contentDescription="Dropdown Image" />
 
@@ -133,6 +134,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginBottom="3dp"
+                    android:onClick="stateImageButtonClicked"
                     android:background="@drawable/spinner_right_icon"
                     android:contentDescription="Dropdown Image" />
 
@@ -172,10 +174,26 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/addImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="6dp"
+            android:background="@drawable/button_popup"
+            android:elevation="20dp"
+            android:paddingStart="18dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="5dp"
+            android:text="Add Image"
+            android:textColor="@android:color/white" />
+
         <CheckBox
             android:id="@+id/conditionsCheckbox"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="7dp"
             android:text="@string/termsAndConditionsText"
             android:textSize="@dimen/normal_text_size" />
