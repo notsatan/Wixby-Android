@@ -5,14 +5,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 
+
+import java.sql.Blob;
 
 import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "Users.db";
+
     public static final String TABLE_NAME = "IndexTable";
+    public static final String IMAGE_TABLE = "ImageTable";
 
     public static final String COLUMN_INDEX = "AutoIndex";
     public static final String COLUMN_FIRST_NAME = "FirstName";
@@ -24,6 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PIN = "PinCode";
     public static final String COLUMN_DOB = "DateOfBirth";
     public static final String COLUMN_GENDER = "Gender";
+    public static final String COLUMN_IMAGE = "Image";
 
     /**
      * The constructor of the class. Will be used to fetch the context from the calling activity into
@@ -64,8 +70,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_DOB, COLUMN_GENDER, COLUMN_PLACE, COLUMN_PIN, COLUMN_STATE, COLUMN_COUNTRY
         );
 
-        // Running the SQL Query created above.
+        // Creating another table that will be used specifically to store images in the database
+        String imageQuery = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "%s BLOB);", IMAGE_TABLE, COLUMN_INDEX, COLUMN_IMAGE);
+
+        // Running the SQL Query(s) created above.
         sqLiteDatabase.execSQL(sqlQuery);
+        sqLiteDatabase.execSQL(imageQuery);
     }
 
     /**
@@ -110,11 +121,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param pin       A string containing the PIN Code entered.
      * @param dob       A string containing the date of birth.
      * @param gender    A string containing the gender.
+     * @param image     A bitmap containing the image that the user wants to add to the database.
      * @return If the insertion is successful, the row ID of the newly inserted row will be returned
      * and -1 will be returned in case of error.
      */
     public long registerUser(String firstName, String lastName, String password, String place,
-                             String state, String country, String pin, String dob, String gender) {
+                             String state, String country, String pin, String dob, String gender, Bitmap image) {
         // Starting by getting an instance of the database that will be used to write the values into.
         SQLiteDatabase database = this.getWritableDatabase();
 
@@ -140,6 +152,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // the row ID of the newly inserted row (-1 in case of error).
         long result = database.insert(TABLE_NAME, null, contentValues);
 
+        // Overwriting the same `contentValues` now to insert image into the database.
+        contentValues = new ContentValues();
+
+        // Using `ImageHandler` class to convert the supplied image into an array of bytes. And
+        // adding the same to the ImageTable of the database.
+        contentValues.put(COLUMN_IMAGE, ImageHandler.getBytes(image));
+
+        long resultNew = database.insert(IMAGE_TABLE, null, contentValues);
+
         /*
          * nullColumnHack -->> Normally, a completely empty (null) row cannot be added to SQLite
          * database without explicitly indicating name of the column to which the null entry should be
@@ -153,7 +174,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Once the row is added to the database, closing the database and returning result.
         database.close();
-        return result;
+
+        // Since negative value implies an error in insertion, thus sending negative value (if present).
+        return (result < 0) ? result : resultNew;
     }
 
 
@@ -171,9 +194,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String query = String.format("SELECT * FROM %s WHERE %s = (SELECT MAX(%s) FROM %s)",
                 TABLE_NAME, COLUMN_INDEX, COLUMN_INDEX, TABLE_NAME);
 
+        String imageQuery = String.format("SELECT * FROM %s WHERE %s = (SELECT MAX(%s) FROM %s)",
+                IMAGE_TABLE, COLUMN_INDEX, COLUMN_INDEX, IMAGE_TABLE);
+
         // Creating a new cursor. This cursor will get location of the row when the following SQL
-        // query is executed.
-        Cursor cursor = sqLiteDatabase.rawQuery(query, null);
+        // query is executed. Getting the image from the image table first.
+        Cursor cursor = sqLiteDatabase.rawQuery(imageQuery, null);
+
+        // If the cursor is not null, then moving it to the first row of the resultant query.
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        byte[] imageBlob = cursor.getBlob(1);
+
+        // Next, getting data from the rest of the table using the other SQL query.
+        cursor = sqLiteDatabase.rawQuery(query, null);
 
         // If the database had no such data, then the cursor will be null. If the cursor isn't null,
         // then moving the cursor to the row where we found the required data.
@@ -184,7 +219,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Data data = new Data(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
                 cursor.getString(2), cursor.getString(3), cursor.getString(6),
                 cursor.getString(8), cursor.getString(9), cursor.getString(7),
-                cursor.getString(4), cursor.getString(5));
+                cursor.getString(4), cursor.getString(5), imageBlob);
 
         // Once the work with the cursor is done, closing it.
         cursor.close();
@@ -208,6 +243,7 @@ class Data {
     private String pin;
     private String state;
     private String country;
+    private Bitmap image;
 
     /**
      * The class constructor. Will be used as the only setter in the entire class.
@@ -222,9 +258,10 @@ class Data {
      * @param pin         The PIN code that the user entered.
      * @param state       The state in which the user resides.
      * @param country     The country of residence for the user.
+     * @param imageByte   The image as an array of bytes.
      */
     public Data(int userIndex, String firstName, String lastName, String password, String dateOfBirth,
-                String gender, String location, String pin, String state, String country) {
+                String gender, String location, String pin, String state, String country, byte[] imageByte) {
         this.userIndex = userIndex;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -235,6 +272,7 @@ class Data {
         this.pin = pin;
         this.state = state;
         this.country = country;
+        this.image = ImageHandler.getImage(imageByte);
     }
 
     public int getUserIndex() {
@@ -275,5 +313,9 @@ class Data {
 
     public String getState() {
         return state;
+    }
+
+    public Bitmap getImage() {
+        return image;
     }
 }

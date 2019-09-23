@@ -1,6 +1,7 @@
 package com.tinyideas.wixby;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -10,11 +11,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
@@ -24,6 +31,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -47,6 +55,12 @@ public class SignUp02 extends AppCompatActivity {
     private static String password = "";
     private static String dateOfBirth = "";
     private static String gender = "";
+
+    private static Bitmap imageSelected;
+
+    private static final int SELECT_IMAGE_REQUEST_CODE = 48;
+    private Spinner countrySpinner;
+    private Spinner stateSpinner;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -102,13 +116,13 @@ public class SignUp02 extends AppCompatActivity {
         }
 
         // Getting the country spinner from the XML
-        final Spinner countrySpinner = findViewById(R.id.countrySpinner);
+        countrySpinner = findViewById(R.id.countrySpinner);
 
         // Getting the state spinner and the text view from the XML layout. Both of these are hidden
         // by default. Depending on the country selected by the user, one of the two will be displayed
         // and the other will remain hidden.
         final TextInputEditText stateTextView = findViewById(R.id.stateTextView);
-        final Spinner stateSpinner = findViewById(R.id.stateSpinner);
+        stateSpinner = findViewById(R.id.stateSpinner);
 
         // Getting the container layout for the state textView and the state spinner. Instead of hiding
         // the individual, these container layouts will be hidden from the screen as required.
@@ -122,6 +136,8 @@ public class SignUp02 extends AppCompatActivity {
 
         final Button resetButton = findViewById(R.id.main_resetButton);
         final Button submitButton = findViewById(R.id.main_submitButton);
+
+        final Button addImage = findViewById(R.id.addImageButton);
 
         // Changing the text of the submit button.
         submitButton.setText("Submit");
@@ -249,6 +265,20 @@ public class SignUp02 extends AppCompatActivity {
             }
         });
 
+        // Adding a listener for clicks on the add image button.
+        addImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Use  MediaStore.Images.Media.EXTERNAL_CONTENT_URI to open the gallery and allow
+                // the user to select an image from there.
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                // Starting the activity such that once the activity completes, a result would be
+                // sent to this activity.
+                startActivityForResult(intent, SELECT_IMAGE_REQUEST_CODE);
+            }
+        });
+
         // Attaching a click event listener to the reset button.
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,6 +354,15 @@ public class SignUp02 extends AppCompatActivity {
                     }
                 }
 
+                // Checking if an image is supplied or not.
+                if (imageSelected == null) {
+                    Snackbar.make(findViewById(R.id.activity_main_layout),
+                            "Please select an image before proceeding", Snackbar.LENGTH_LONG).show();
+
+                    // Returning the flow of control from this section.
+                    return;
+                }
+
                 // Checking if the checkbox is clicked or not.
                 if (!submitCheckBox.isChecked()) {
                     // If the checkbox is not checked (oh the irony), then displaying an error message to the user
@@ -339,7 +378,7 @@ public class SignUp02 extends AppCompatActivity {
                 // insert data into the database.
                 DatabaseHelper databaseHelper = new DatabaseHelper(SignUp02.this);
                 databaseHelper.registerUser(firstName, lastName, password, dateOfBirth, gender, location,
-                        pin, state, country);
+                        pin, state, country, imageSelected);
 
                 // Once the data has been added, pausing the app for a couple of seconds and then
                 // launching the next activity.
@@ -423,6 +462,47 @@ public class SignUp02 extends AppCompatActivity {
                         "Y u do this to me?\n\t\t\t\tI cri\t\t ಥ_ಥ", Snackbar.LENGTH_LONG).show();
             }
         }
+    }
+
+    /**
+     * This method will be executed when the started activity completes and returns the result to this
+     * activity. The result returned from that activity will be used in this activity.
+     *
+     * @param requestCode An integer. This will be the code that was used while launching the activity.
+     * @param resultCode  An integer. Will be the code that is returned by the activity once it closes.
+     * @param data        An optional intent. If the activity wants, it can attach data to an intent and that
+     *                    intent will be received as this intent.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Checking if the activity that has returned the result is the one that is required or not.
+        if (requestCode == SELECT_IMAGE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            // If any exception is caused in this block, then it means that the input was unexpected.
+            // Thus, catching the exception, and setting the image selected as null to prevent
+            // the user from being able to proceed.
+            try {
+                // Getting the Uri which will then be used to get the selected image.
+                Uri selectedImageUri = data.getData();
+
+                // Getting the selected image as a bitmap.
+                imageSelected = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                imageSelected = null;
+            }
+            Log.d("DEBUG", "");
+        }
+    }
+
+    public void countryImageButtonClicked(View view) {
+        countrySpinner.performClick();
+    }
+
+    public void stateImageButtonClicked(View view) {
+        stateSpinner.performClick();
     }
 }
 

@@ -51,6 +51,8 @@ public class DisplayData extends AppCompatActivity {
         // Also, getting the ImageView that will be used to show or hide the password.
         final ImageView showPassword = findViewById(R.id.displayShowPassword);
 
+        final ImageView displayImage = findViewById(R.id.displayImage);
+
         // Populating the text view with data from the database.
         userCounter.setText(String.format("User #%s", userData.getUserIndex()));
         name.setText(String.format("Name:  %s %s", userData.getFirstName(), userData.getLastName()));
@@ -60,6 +62,7 @@ public class DisplayData extends AppCompatActivity {
         location.setText(String.format("Location:  %s", userData.getLocation()));
         pin.setText(String.format("PIN Code: %s", userData.getPin()));
         country.setText(String.format("Miscellaneous:  %s, %s", userData.getState(), userData.getCountry()));
+        displayImage.setImageBitmap(userData.getImage());
 
         // Attaching an on-click listener to the show password image view.
         showPassword.setOnClickListener(new View.OnClickListener() {
